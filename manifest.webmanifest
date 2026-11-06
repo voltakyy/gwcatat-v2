@@ -1,0 +1,17 @@
+{
+  "name": "gwcatat v2 — Catatan & Keuangan Pribadi",
+  "short_name": "gwcatat",
+  "description": "Aplikasi manajemen keuangan pribadi lokal & privat bergaya iOS 18 dengan analisis 50/30/20 dan laporan SAK EMKM.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#f2f2f7",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

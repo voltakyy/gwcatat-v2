@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="iosGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34c759"/>
+      <stop offset="50%" stop-color="#007aff"/>
+      <stop offset="100%" stop-color="#5856d6"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#007aff" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#iosGrad)"/>
+  <!-- Wallet / Notes glyph -->
+  <g fill="#ffffff" filter="url(#glow)">
+    <path d="M140 160 C140 138 158 120 180 120 L332 120 C354 120 372 138 372 160 L372 180 L140 180 Z" opacity="0.85"/>
+    <rect x="120" y="180" width="272" height="212" rx="28" fill="#ffffff"/>
+    <circle cx="330" cy="286" r="22" fill="#007aff"/>
+    <circle cx="330" cy="286" r="10" fill="#ffffff"/>
+    <rect x="160" y="230" width="100" height="18" rx="9" fill="#e5e5ea"/>
+    <rect x="160" y="266" width="130" height="18" rx="9" fill="#e5e5ea"/>
+    <rect x="160" y="302" width="70" height="18" rx="9" fill="#34c759"/>
+  </g>
+</svg>

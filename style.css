@@ -1,0 +1,1334 @@
+/* ==========================================================================
+   GWCATAT V2 — iOS 18 Native App Store / Widget Style Design System
+   Human Interface Guidelines (HIG) Compliant · Local-First · Pure CSS
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+:root {
+  /* iOS 18 System Backgrounds */
+  --ios-bg: #f2f2f7;
+  --ios-card: #ffffff;
+  --ios-card-subtle: #f8f8fc;
+  --ios-card-glass: rgba(255, 255, 255, 0.88);
+  --ios-separator: rgba(60, 60, 67, 0.08);
+  --ios-border-subtle: rgba(0, 0, 0, 0.04);
+
+  /* iOS 18 Label / Text Hierarchy */
+  --ios-label: #1c1c1e;
+  --ios-label-secondary: #636366;
+  --ios-label-tertiary: #8e8e93;
+  --ios-label-quaternary: #aeaeb2;
+
+  /* iOS System Colors */
+  --ios-blue: #007aff;
+  --ios-blue-rgb: 0, 122, 255;
+  --ios-green: #34c759;
+  --ios-green-rgb: 52, 199, 89;
+  --ios-red: #ff3b30;
+  --ios-red-rgb: 255, 59, 48;
+  --ios-orange: #ff9500;
+  --ios-orange-rgb: 255, 149, 0;
+  --ios-purple: #af52de;
+  --ios-purple-rgb: 175, 82, 222;
+  --ios-teal: #30b0c7;
+  --ios-teal-rgb: 48, 176, 199;
+  --ios-yellow: #ffcc00;
+  --ios-pink: #ff2d55;
+  --ios-indigo: #5856d6;
+
+  /* Fresh Fruit Gradients for Category Icons */
+  --grad-emerald: linear-gradient(135deg, #34c759 0%, #30d158 100%);
+  --grad-coral: linear-gradient(135deg, #ff9500 0%, #ff5e3a 100%);
+  --grad-blue: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+  --grad-purple: linear-gradient(135deg, #af52de 0%, #ff2d55 100%);
+  --grad-amber: linear-gradient(135deg, #ffcc00 0%, #ff9500 100%);
+  --grad-teal: linear-gradient(135deg, #00c7be 0%, #30b0c7 100%);
+  --grad-rose: linear-gradient(135deg, #ff3b30 0%, #ff6b6b 100%);
+  --grad-wallet: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+
+  /* Apple Soft Multi-Layer Shadows */
+  --ios-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --ios-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --ios-shadow-md: 0 6px 16px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+  --ios-shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+  --ios-shadow-float: 0 16px 36px rgba(0, 0, 0, 0.08), 0 6px 16px rgba(0, 0, 0, 0.04);
+
+  /* Apple Squircle Radii */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-squircle: 20px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+[data-theme="dark"] {
+  --ios-bg: #000000;
+  --ios-card: #1c1c1e;
+  --ios-card-subtle: #2c2c2e;
+  --ios-card-glass: rgba(28, 28, 30, 0.88);
+  --ios-separator: rgba(255, 255, 255, 0.1);
+  --ios-border-subtle: rgba(255, 255, 255, 0.08);
+
+  --ios-label: #f2f2f7;
+  --ios-label-secondary: #a1a1a6;
+  --ios-label-tertiary: #636366;
+  --ios-label-quaternary: #3a3a3c;
+
+  --grad-wallet: linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 100%);
+
+  --ios-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.4);
+  --ios-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --ios-shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.6);
+  --ios-shadow-float: 0 20px 48px rgba(0, 0, 0, 0.7);
+}
+
+/* =================== RESET & GLOBAL =================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--ios-bg);
+  color: var(--ios-label);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 96px; /* Space for iOS Bottom Bar on Mobile */
+}
+
+@media (min-width: 900px) {
+  body {
+    padding-bottom: 40px;
+  }
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =================== DYNAMIC ISLAND ALERT TOAST =================== */
+.dynamic-island {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px) scale(0.9);
+  z-index: 9999;
+  background: #000000;
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dynamic-island.show {
+  transform: translateX(-50%) translateY(0) scale(1);
+  opacity: 1;
+}
+
+.dynamic-island-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.dynamic-island.success .dynamic-island-icon { background: var(--ios-green); color: #fff; }
+.dynamic-island.warning .dynamic-island-icon { background: var(--ios-orange); color: #fff; }
+.dynamic-island.error .dynamic-island-icon { background: var(--ios-red); color: #fff; }
+
+/* =================== APP SHELL & LAYOUT =================== */
+.app-container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* =================== TOP NAVIGATION BAR (iOS Navigation Bar) =================== */
+.ios-nav-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--ios-card-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--ios-separator);
+  transition: all 0.2s ease;
+}
+
+.nav-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  gap: 12px;
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--grad-emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+  flex-shrink: 0;
+}
+
+.brand-title-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ios-label);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 122, 255, 0.12);
+  color: var(--ios-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.brand-sub {
+  font-size: 11.5px;
+  color: var(--ios-label-secondary);
+  font-weight: 500;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Period Selector Widget (Month Nav) */
+.month-picker-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--ios-card);
+  border: 1px solid var(--ios-separator);
+  border-radius: var(--radius-pill);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ios-label);
+  box-shadow: var(--ios-shadow-xs);
+  transition: all 0.15s ease;
+}
+
+.month-picker-pill:active {
+  transform: scale(0.97);
+}
+
+.nav-circle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ios-card);
+  border: 1px solid var(--ios-separator);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--ios-label);
+  box-shadow: var(--ios-shadow-xs);
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nav-circle-btn:active {
+  transform: scale(0.95);
+  background: var(--ios-card-subtle);
+}
+
+/* Desktop Header Tabs (Hidden on Mobile) */
+.desktop-nav-tabs {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .desktop-nav-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(118, 118, 128, 0.1);
+    padding: 3px;
+    border-radius: var(--radius-pill);
+  }
+
+  .desktop-tab-btn {
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ios-label-secondary);
+    transition: all 0.15s ease;
+  }
+
+  .desktop-tab-btn:hover {
+    color: var(--ios-label);
+  }
+
+  .desktop-tab-btn.active {
+    background: var(--ios-card);
+    color: var(--ios-blue);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* =================== VIEW TABS CONTAINER =================== */
+.tab-view {
+  display: none;
+  animation: fadeIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  padding-top: 18px;
+}
+
+.tab-view.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =================== iOS 18 SQUIRCLE CARDS =================== */
+.ios-card {
+  background: var(--ios-card);
+  border-radius: var(--radius-squircle);
+  border: 1px solid var(--ios-border-subtle);
+  box-shadow: var(--ios-shadow-sm);
+  padding: 20px;
+  margin-bottom: 18px;
+  position: relative;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.15s ease;
+}
+
+.ios-card.interactive:active {
+  transform: scale(0.98);
+}
+
+.ios-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.ios-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ios-label);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ios-card-action {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ios-blue);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.ios-card-action:hover {
+  opacity: 0.8;
+}
+
+/* =================== 1. HERO WALLET WIDGET =================== */
+.wallet-hero-card {
+  background: var(--grad-wallet);
+  color: #ffffff;
+  border-radius: 24px;
+  padding: 24px 22px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.wallet-hero-card::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(52, 199, 89, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.wallet-hero-card::before {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: 20px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.wallet-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.wallet-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wallet-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ios-green);
+  box-shadow: 0 0 10px var(--ios-green);
+}
+
+.wallet-period-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+}
+
+.wallet-balance-wrap {
+  margin: 14px 0 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.wallet-balance-amount {
+  font-size: clamp(28px, 6vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.wallet-balance-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+/* Dual stats pills inside wallet */
+.wallet-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.wallet-stat-pill {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+.stat-pill-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat-pill-amount {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 2px;
+  letter-spacing: -0.01em;
+}
+
+.stat-pill-amount.in { color: #5eead4; }
+.stat-pill-amount.out { color: #fca5a5; }
+
+/* Quick Action Buttons inside Wallet */
+.wallet-actions-row {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.wallet-btn {
+  flex: 1;
+  padding: 11px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  white-space: nowrap;
+}
+
+.wallet-btn:active {
+  transform: scale(0.97);
+}
+
+.wallet-btn-primary {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.wallet-btn-secondary {
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* =================== 2. APPLE ACTIVITY 50/30/20 WIDGET =================== */
+.budget-rule-widget {
+  padding: 18px 20px;
+}
+
+.rule-bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.rule-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rule-bar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+}
+
+.rule-bar-label {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rule-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.rule-dot.kebutuhan { background: var(--ios-blue); }
+.rule-dot.keinginan { background: var(--ios-purple); }
+.rule-dot.tabungan { background: var(--ios-green); }
+
+.rule-bar-val {
+  font-weight: 700;
+  color: var(--ios-label-secondary);
+}
+
+.rule-progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--ios-card-subtle);
+  overflow: hidden;
+  position: relative;
+}
+
+.rule-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.rule-progress-fill.kebutuhan { background: var(--grad-blue); }
+.rule-progress-fill.keinginan { background: var(--grad-purple); }
+.rule-progress-fill.tabungan { background: var(--grad-emerald); }
+
+/* =================== 3. FIVE FINANCIAL HEALTH INDICATORS (GRID) =================== */
+.health-indicators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.health-card {
+  background: var(--ios-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ios-border-subtle);
+  box-shadow: var(--ios-shadow-xs);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 110px;
+}
+
+.health-card:active {
+  transform: scale(0.97);
+  box-shadow: var(--ios-shadow-sm);
+}
+
+.health-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.health-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.health-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+}
+
+.health-badge.good { background: rgba(52, 199, 89, 0.12); color: var(--ios-green); }
+.health-badge.warning { background: rgba(255, 149, 0, 0.12); color: var(--ios-orange); }
+.health-badge.bad { background: rgba(255, 59, 48, 0.12); color: var(--ios-red); }
+
+.health-card-bottom {
+  margin-top: 10px;
+}
+
+.health-card-value {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ios-label);
+}
+
+.health-card-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ios-label-secondary);
+  margin-top: 2px;
+}
+
+/* =================== iOS SEGMENTED CONTROL =================== */
+.segmented-control {
+  display: flex;
+  background: rgba(118, 118, 128, 0.12);
+  border-radius: 10px;
+  padding: 2px;
+  width: 100%;
+  margin-bottom: 16px;
+  position: relative;
+  user-select: none;
+}
+
+.segment-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ios-label-secondary);
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  white-space: nowrap;
+}
+
+.segment-btn:active {
+  transform: scale(0.97);
+}
+
+.segment-btn.active {
+  background: var(--ios-card);
+  color: var(--ios-label);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* =================== TRANSACTION LIST (iOS Grouped Table) =================== */
+.ios-list-group {
+  background: var(--ios-card);
+  border-radius: var(--radius-squircle);
+  border: 1px solid var(--ios-border-subtle);
+  box-shadow: var(--ios-shadow-sm);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.tx-row {
+  display: flex;
+  align-items: center;
+  padding: 13px 16px;
+  gap: 13px;
+  border-bottom: 1px solid var(--ios-separator);
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.tx-row:last-child {
+  border-bottom: none;
+}
+
+.tx-row:hover {
+  background-color: var(--ios-card-subtle);
+}
+
+.tx-row:active {
+  transform: scale(0.99);
+}
+
+.tx-icon-squircle {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tx-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tx-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ios-label);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tx-meta {
+  font-size: 11.5px;
+  color: var(--ios-label-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.tx-tag {
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--ios-card-subtle);
+}
+
+.tx-amount-box {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.tx-amount {
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.tx-amount.income { color: var(--ios-green); }
+.tx-amount.expense { color: var(--ios-red); }
+.tx-amount.debt { color: var(--ios-orange); }
+
+.tx-delete-btn {
+  opacity: 0.3;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.tx-row:hover .tx-delete-btn {
+  opacity: 1;
+}
+
+.tx-delete-btn:hover {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--ios-red);
+}
+
+/* =================== SEARCH BAR =================== */
+.ios-search-box {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.ios-search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  background: rgba(118, 118, 128, 0.1);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--ios-label);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ios-search-input:focus {
+  background: var(--ios-card);
+  border-color: var(--ios-blue);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.ios-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--ios-label-tertiary);
+  pointer-events: none;
+}
+
+/* =================== TABUNGAN & DANA DARURAT =================== */
+.target-slider-box {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.target-slider-box input[type="range"] {
+  width: 100%;
+  accent-color: var(--ios-blue);
+}
+
+.slider-val-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ios-label-secondary);
+}
+
+/* =================== UTANG & PIUTANG BOARD =================== */
+.debt-status-card {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ios-card-subtle);
+  border: 1px solid var(--ios-separator);
+}
+
+.btn-lunas-toggle {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-lunas-toggle.unpaid {
+  background: rgba(255, 149, 0, 0.12);
+  color: var(--ios-orange);
+  border: 1px solid rgba(255, 149, 0, 0.3);
+}
+
+.btn-lunas-toggle.paid {
+  background: rgba(52, 199, 89, 0.12);
+  color: var(--ios-green);
+  border: 1px solid rgba(52, 199, 89, 0.3);
+}
+
+/* =================== LAPORAN KEUANGAN SAK EMKM =================== */
+.report-metric-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.report-metric-card {
+  background: var(--ios-card-subtle);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ios-separator);
+}
+
+.report-metric-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ios-label-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.report-metric-val {
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+/* Tables in Laporan */
+.ios-table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--ios-separator);
+  margin-top: 14px;
+}
+
+.ios-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.ios-table th {
+  background: var(--ios-card-subtle);
+  padding: 10px 14px;
+  font-weight: 700;
+  color: var(--ios-label-secondary);
+  border-bottom: 1px solid var(--ios-separator);
+  white-space: nowrap;
+}
+
+.ios-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--ios-separator);
+  color: var(--ios-label);
+}
+
+.ios-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* =================== ACTION BUTTONS =================== */
+.btn-ios {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: var(--ios-shadow-xs);
+}
+
+.btn-ios:active {
+  transform: scale(0.97);
+}
+
+.btn-ios-primary {
+  background: var(--ios-blue);
+  color: #ffffff;
+}
+
+.btn-ios-primary:hover {
+  background: #0066d6;
+}
+
+.btn-ios-green {
+  background: var(--ios-green);
+  color: #ffffff;
+}
+
+.btn-ios-secondary {
+  background: var(--ios-card);
+  color: var(--ios-label);
+  border: 1px solid var(--ios-separator);
+}
+
+.btn-ios-secondary:hover {
+  background: var(--ios-card-subtle);
+}
+
+.btn-ios-danger {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--ios-red);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+.btn-ios-danger:hover {
+  background: var(--ios-red);
+  color: #ffffff;
+}
+
+/* =================== FLOATING BOTTOM TAB BAR (iOS Mobile Dock) =================== */
+.ios-bottom-bar {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(440px, calc(100% - 24px));
+  background: var(--ios-card-glass);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid var(--ios-separator);
+  border-radius: 30px;
+  box-shadow: var(--ios-shadow-float);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 6px 10px;
+  z-index: 500;
+}
+
+@media (min-width: 900px) {
+  .ios-bottom-bar {
+    display: none; /* Desktop uses top navigation bar */
+  }
+}
+
+.tab-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: var(--ios-label-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-bar-item:active {
+  transform: scale(0.92);
+}
+
+.tab-bar-item.active {
+  color: var(--ios-blue);
+  font-weight: 700;
+}
+
+.tab-bar-icon {
+  font-size: 19px;
+  line-height: 1;
+}
+
+/* Center Glow Add Button in Bottom Bar */
+.tab-bar-add-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--grad-emerald);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 14px rgba(52, 199, 89, 0.4);
+  margin-top: -14px;
+  transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: pointer;
+}
+
+.tab-bar-add-btn:active {
+  transform: scale(0.9);
+}
+
+/* =================== iOS BOTTOM SHEET / ACTION MODAL =================== */
+.ios-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.ios-modal-overlay.open {
+  display: flex;
+  opacity: 1;
+}
+
+.ios-bottom-sheet {
+  background: var(--ios-card);
+  width: min(580px, 100%);
+  max-height: 90vh;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+  padding: 16px 22px 36px;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+}
+
+@media (min-width: 600px) {
+  .ios-modal-overlay {
+    align-items: center;
+  }
+  .ios-bottom-sheet {
+    border-radius: 24px;
+    padding: 24px;
+    transform: scale(0.95);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .ios-modal-overlay.open .ios-bottom-sheet {
+    transform: scale(1);
+  }
+}
+
+.ios-modal-overlay.open .ios-bottom-sheet {
+  transform: translateY(0);
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ios-separator);
+  margin: 0 auto 16px;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.sheet-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sheet-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ios-card-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--ios-label-secondary);
+}
+
+/* Modal Form Controls */
+.ios-form-group {
+  margin-bottom: 16px;
+}
+
+.ios-form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ios-label-secondary);
+  margin-bottom: 6px;
+}
+
+.ios-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--ios-card-subtle);
+  border: 1px solid var(--ios-separator);
+  font-size: 15px;
+  color: var(--ios-label);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.ios-input:focus {
+  background: var(--ios-card);
+  border-color: var(--ios-blue);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+/* Category Grid Selection */
+.cat-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.cat-picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px;
+  border-radius: var(--radius-sm);
+  background: var(--ios-card-subtle);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cat-picker-item:active {
+  transform: scale(0.95);
+}
+
+.cat-picker-item.selected {
+  background: rgba(0, 122, 255, 0.08);
+  border-color: var(--ios-blue);
+}
+
+.cat-picker-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.cat-picker-name {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--ios-label);
+  line-height: 1.2;
+}
+
+/* =================== EMPTY STATE =================== */
+.empty-state {
+  text-align: center;
+  padding: 38px 20px;
+  color: var(--ios-label-secondary);
+}
+
+.empty-state-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.empty-state-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ios-label);
+}
+
+.empty-state-text {
+  font-size: 12.5px;
+  margin-top: 4px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}

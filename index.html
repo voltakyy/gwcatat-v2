@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>gwcatat v2 — Catatan & Keuangan Pribadi (iOS 18 Local-First)</title>
+  <meta name="description" content="Aplikasi pencatatan keuangan pribadi offline-first bergaya iOS 18 Native Widget. Tanpa login, 100% lokal dan privat." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#f2f2f7" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="gwcatat" />
+
+  <!-- SheetJS & Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- iOS 18 Design System CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ================= DYNAMIC ISLAND TOAST NOTIFICATION ================= -->
+  <div id="dynamicIsland" class="dynamic-island">
+    <div id="dynamicIslandIcon" class="dynamic-island-icon">✓</div>
+    <span id="dynamicIslandMsg">Transaksi Disimpan</span>
+  </div>
+
+  <!-- ================= TOP NAVIGATION BAR (iOS Header) ================= -->
+  <header class="ios-nav-header">
+    <div class="app-container">
+      <div class="nav-header-inner">
+        <!-- Brand Identity -->
+        <div class="brand-wrap">
+          <div class="brand-icon">💰</div>
+          <div class="brand-title-box">
+            <div class="brand-name">
+              <span>gwcatat</span>
+              <span class="brand-badge">v2 Lokal</span>
+            </div>
+            <div class="brand-sub">Semua uang punya cerita.</div>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Tabs (Hidden on mobile) -->
+        <nav class="desktop-nav-tabs">
+          <button class="desktop-tab-btn active" data-tab="beranda" onclick="switchTab('beranda')">Beranda</button>
+          <button class="desktop-tab-btn" data-tab="transaksi" onclick="switchTab('transaksi')">Transaksi</button>
+          <button class="desktop-tab-btn" data-tab="tabungan" onclick="switchTab('tabungan')">Tabungan &amp; Utang</button>
+          <button class="desktop-tab-btn" data-tab="laporan" onclick="switchTab('laporan')">Laporan SAK</button>
+          <button class="desktop-tab-btn" data-tab="setelan" onclick="switchTab('setelan')">Setelan</button>
+        </nav>
+
+        <!-- Controls: Month & Theme -->
+        <div class="header-controls">
+          <button class="nav-circle-btn" onclick="changeMonth(-1)" title="Bulan Sebelumnya">‹</button>
+          <div class="month-picker-pill">
+            <span>📅</span>
+            <span class="current-month-label mono">November 2026</span>
+          </div>
+          <button class="nav-circle-btn" onclick="changeMonth(1)" title="Bulan Berikutnya">›</button>
+
+          <button id="themeToggleBtn" class="nav-circle-btn" onclick="toggleTheme()" title="Ganti Mode Terang / Gelap">
+            🌙
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT VIEWS ================= -->
+  <main class="app-container">
+
+    <!-- ================= VIEW 1: BERANDA (HOME DASHBOARD) ================= -->
+    <section id="view-beranda" class="tab-view active">
+      
+      <!-- 1. Apple Wallet Card (Hero Saldo Kas Bersih) -->
+      <div class="wallet-hero-card">
+        <div class="wallet-meta-row">
+          <div class="wallet-label">
+            <span class="wallet-status-dot"></span> Saldo Kas Tersedia
+          </div>
+          <div class="wallet-period-badge current-month-label mono">November 2026</div>
+        </div>
+
+        <div class="wallet-balance-wrap">
+          <div id="walletBalance" class="wallet-balance-amount mono">Rp 0</div>
+          <div class="wallet-balance-sub">Kas Bersih (Pemasukan kumulatif dikurangi pengeluaran)</div>
+        </div>
+
+        <div class="wallet-stats-grid">
+          <div class="wallet-stat-pill">
+            <div class="stat-pill-label"><span>↓</span> Pemasukan Bulan Ini</div>
+            <div id="walletIn" class="stat-pill-amount in mono">+Rp 0</div>
+          </div>
+          <div class="wallet-stat-pill">
+            <div class="stat-pill-label"><span>↑</span> Pengeluaran Bulan Ini</div>
+            <div id="walletOut" class="stat-pill-amount out mono">-Rp 0</div>
+          </div>
+        </div>
+
+        <div class="wallet-actions-row">
+          <button class="wallet-btn wallet-btn-primary" onclick="openAddModal('out')">
+            <span>➕</span> Catat Pengeluaran
+          </button>
+          <button class="wallet-btn wallet-btn-secondary" onclick="openAddModal('in')">
+            <span>📥</span> Tambah Pemasukan
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Apple Activity 50/30/20 Budget Widget -->
+      <article class="ios-card budget-rule-widget">
+        <div class="ios-card-header">
+          <div class="ios-card-title">
+            <span>🎯</span> Aturan Anggaran 50 / 30 / 20
+          </div>
+          <span class="ios-card-action" onclick="openHealthModal('lifestyle')">Tips Alokasi ↗</span>
+        </div>
+
+        <div class="rule-bars-container">
+          <!-- Kebutuhan 50% -->
+          <div class="rule-bar-row">
+            <div class="rule-bar-header">
+              <span class="rule-bar-label"><span class="rule-dot kebutuhan"></span> Kebutuhan Pokok (Makan, Kost, Tagihan)</span>
+              <span id="valKebutuhan" class="rule-bar-val mono">Rp 0 (0% / ideal 50%)</span>
+            </div>
+            <div class="rule-progress-track">
+              <div id="fillKebutuhan" class="rule-progress-fill kebutuhan" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Keinginan 30% -->
+          <div class="rule-bar-row">
+            <div class="rule-bar-header">
+              <span class="rule-bar-label"><span class="rule-dot keinginan"></span> Keinginan &amp; Belanja (Hobi, Nongkrong)</span>
+              <span id="valKeinginan" class="rule-bar-val mono">Rp 0 (0% / ideal 30%)</span>
+            </div>
+            <div class="rule-progress-track">
+              <div id="fillKeinginan" class="rule-progress-fill keinginan" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Tabungan 20% -->
+          <div class="rule-bar-row">
+            <div class="rule-bar-header">
+              <span class="rule-bar-label"><span class="rule-dot tabungan"></span> Simpanan &amp; Investasi (Masa Depan)</span>
+              <span id="valTabungan" class="rule-bar-val mono">Rp 0 (0% / ideal 20%)</span>
+            </div>
+            <div class="rule-progress-track">
+              <div id="fillTabungan" class="rule-progress-fill tabungan" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Five Financial Health Indicators Widget -->
+      <div class="health-indicators-grid">
+        <div id="cardSavings" class="health-card"></div>
+        <div id="cardLifestyle" class="health-card"></div>
+        <div id="cardLiquidity" class="health-card"></div>
+        <div id="cardEmergency" class="health-card"></div>
+        <div id="cardDebt" class="health-card"></div>
+      </div>
+
+      <!-- 4. Komposisi Pengeluaran Chart Widget -->
+      <article class="ios-card">
+        <div class="ios-card-header">
+          <div class="ios-card-title">
+            <span>📊</span> Komposisi Finansial Bulan Ini
+          </div>
+          <span class="ios-card-action" onclick="switchTab('laporan')">Buka Laporan SAK ↗</span>
+        </div>
+        <div style="height: 200px; position: relative;">
+          <canvas id="chartCategory"></canvas>
+        </div>
+      </article>
+
+      <!-- 5. Transaksi Terkini Widget -->
+      <div class="ios-card" style="padding: 16px 20px;">
+        <div class="ios-card-header" style="margin-bottom: 10px;">
+          <div class="ios-card-title">
+            <span>⏱️</span> Transaksi Terkini
+          </div>
+          <span class="ios-card-action" onclick="switchTab('transaksi')">Lihat Semua ↗</span>
+        </div>
+        <div id="recentTransactionsList" class="ios-list-group" style="box-shadow: none; border: none; margin-bottom: 0;"></div>
+      </div>
+
+    </section>
+
+    <!-- ================= VIEW 2: TRANSAKSI (ALL TRANSACTIONS) ================= -->
+    <section id="view-transaksi" class="tab-view">
+      
+      <!-- Search & Filters -->
+      <div class="ios-search-box">
+        <span class="ios-search-icon">🔍</span>
+        <input type="text" id="txSearchInput" class="ios-search-input" placeholder="Cari transaksi, toko, pihak, atau keterangan..." />
+      </div>
+
+      <!-- Segmented Control Filter -->
+      <div class="segmented-control">
+        <button class="segment-btn tx-filter-segment active" data-filter="all">Semua</button>
+        <button class="segment-btn tx-filter-segment" data-filter="out">Pengeluaran</button>
+        <button class="segment-btn tx-filter-segment" data-filter="in">Pemasukan</button>
+      </div>
+
+      <!-- Transaction List -->
+      <div id="fullTransactionsList" class="ios-list-group"></div>
+
+      <!-- Add Button Bottom Action -->
+      <div style="text-align: center; margin: 20px 0;">
+        <button class="btn-ios btn-ios-primary" style="width: min(320px, 100%);" onclick="openAddModal('out')">
+          <span>➕</span> Catat Transaksi Baru
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ================= VIEW 3: TABUNGAN & UTANG-PIUTANG ================= -->
+    <section id="view-tabungan" class="tab-view">
+      
+      <!-- Dana Darurat Tracker Widget -->
+      <article class="ios-card">
+        <div class="ios-card-header">
+          <div class="ios-card-title">
+            <span>🛡️</span> Tabungan &amp; Dana Darurat
+          </div>
+          <button class="btn-ios btn-ios-primary" style="padding: 6px 14px; font-size: 12px;" onclick="openAddModal('out')">
+            + Sisihkan
+          </button>
+        </div>
+
+        <div style="display: flex; align-items: baseline; gap: 10px; margin: 12px 0 6px;">
+          <div id="pgDanaDaruratAmount" class="mono" style="font-size: 32px; font-weight: 800; color: var(--ios-green);">Rp 0</div>
+          <span style="font-size: 12px; color: var(--ios-label-secondary);">Tersimpan Aman</span>
+        </div>
+        <p style="font-size: 13px; color: var(--ios-label-secondary); line-height: 1.45;">
+          Dana darurat berfungsi melindungi dari risiko tak terduga tanpa perlu meminjam utang berbunga. Simpan di instrumen likuid (rekening terpisah / RDPU).
+        </p>
+      </article>
+
+      <!-- Utang & Piutang Manager -->
+      <article class="ios-card">
+        <div class="ios-card-header">
+          <div class="ios-card-title">
+            <span>🤝</span> Daftar Piutang (Akan Kamu Terima)
+          </div>
+          <button class="btn-ios btn-ios-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="openAddModal('piutang')">
+            + Catat Piutang
+          </button>
+        </div>
+        <div id="piutangList"></div>
+      </article>
+
+      <article class="ios-card">
+        <div class="ios-card-header">
+          <div class="ios-card-title">
+            <span>💳</span> Daftar Utang (Harus Kamu Bayar)
+          </div>
+          <button class="btn-ios btn-ios-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="openAddModal('utang')">
+            + Catat Utang
+          </button>
+        </div>
+        <div id="utangList"></div>
+      </article>
+
+    </section>
+
+    <!-- ================= VIEW 4: LAPORAN KEUANGAN SAK EMKM ================= -->
+    <section id="view-laporan" class="tab-view">
+      
+      <!-- Report Header Card -->
+      <div class="ios-card">
+        <div class="ios-card-header">
+          <div class="ios-card-title">
+            <span>📊</span> Laporan Keuangan Standar SAK EMKM
+          </div>
+          <span class="current-month-label mono" style="font-weight: 700; color: var(--ios-blue);">November 2026</span>
+        </div>
+        <p style="font-size: 13px; color: var(--ios-label-secondary); margin-bottom: 16px;">
+          Laporan ini disusun otomatis dengan pembukuan berpasangan (Debit/Kredit) dan dapat langsung diekspor ke Excel 5 Sheet untuk audit maupun arsip pribadi.
+        </p>
+
+        <!-- Laba Rugi Highlights -->
+        <div class="report-metric-summary">
+          <div class="report-metric-card">
+            <div class="report-metric-title">Pendapatan Bersih</div>
+            <div id="repPendapatan" class="report-metric-val mono" style="color: var(--ios-green);">Rp 0</div>
+          </div>
+          <div class="report-metric-card">
+            <div class="report-metric-title">Beban &amp; Pengeluaran</div>
+            <div id="repBeban" class="report-metric-val mono" style="color: var(--ios-red);">Rp 0</div>
+          </div>
+          <div class="report-metric-card">
+            <div class="report-metric-title">Laba Bersih (Surplus)</div>
+            <div id="repLabaBersih" class="report-metric-val mono">Rp 0</div>
+            <div id="repMargin" class="mono" style="font-size: 11px; color: var(--ios-label-secondary); margin-top: 2px;">Margin: 0%</div>
+          </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-ios btn-ios-green" onclick="exportToExcel()">
+            <span>📥</span> Ekspor Excel (5 Sheet SAK)
+          </button>
+          <button class="btn-ios btn-ios-secondary" onclick="exportJSONBackup()">
+            <span>💾</span> Cadangkan JSON
+          </button>
+          <button class="btn-ios btn-ios-secondary" onclick="window.print()">
+            <span>🖨️</span> Cetak / PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Neraca Sederhana Card -->
+      <div class="ios-card">
+        <div class="ios-card-header">
+          <div class="ios-card-title">
+            <span>⚖️</span> Neraca Ringkas (Posisi Keuangan)
+          </div>
+          <span id="neracaStatus" class="mono" style="font-weight: 700;">✓ Seimbang</span>
+        </div>
+
+        <div class="report-metric-summary">
+          <div class="report-metric-card">
+            <div class="report-metric-title">Kas di Tangan / Bank</div>
+            <div id="neracaKas" class="report-metric-val mono">Rp 0</div>
+          </div>
+          <div class="report-metric-card">
+            <div class="report-metric-title">Piutang Terbuka</div>
+            <div id="neracaPiutang" class="report-metric-val mono">Rp 0</div>
+          </div>
+          <div class="report-metric-card">
+            <div class="report-metric-title">Simpanan &amp; Tabungan</div>
+            <div id="neracaSimpanan" class="report-metric-val mono">Rp 0</div>
+          </div>
+          <div class="report-metric-card" style="background: rgba(0, 122, 255, 0.08);">
+            <div class="report-metric-title" style="color: var(--ios-blue);">TOTAL ASET</div>
+            <div id="neracaTotalAset" class="report-metric-val mono" style="color: var(--ios-blue);">Rp 0</div>
+          </div>
+          <div class="report-metric-card">
+            <div class="report-metric-title">Kewajiban (Utang)</div>
+            <div id="neracaUtang" class="report-metric-val mono" style="color: var(--ios-red);">Rp 0</div>
+          </div>
+          <div class="report-metric-card" style="background: rgba(52, 199, 89, 0.08);">
+            <div class="report-metric-title" style="color: var(--ios-green);">EKUITAS (MODAL BERSIH)</div>
+            <div id="neracaEkuitas" class="report-metric-val mono" style="color: var(--ios-green);">Rp 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rincian Arus Kas Harian -->
+      <div class="ios-card">
+        <div class="ios-card-title" style="margin-bottom: 12px;">
+          <span>🌊</span> Rincian Arus Kas (Cash Flow Harian)
+        </div>
+        <div class="ios-table-container">
+          <table class="ios-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th style="text-align: right;">Masuk</th>
+                <th style="text-align: right;">Keluar</th>
+                <th style="text-align: right;">Saldo</th>
+              </tr>
+            </thead>
+            <tbody id="cashFlowTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= VIEW 5: SETELAN & PANDUAN ================= -->
+    <section id="view-setelan" class="tab-view">
+      
+      <!-- Info Local-First App -->
+      <article class="ios-card">
+        <div class="ios-card-title" style="margin-bottom: 8px;">
+          <span>🔒</span> Arsitektur Lokal &amp; Privasi 100%
+        </div>
+        <p style="font-size: 13px; color: var(--ios-label-secondary); line-height: 1.5;">
+          Aplikasi <strong>gwcatat v2</strong> berjalan seutuhnya di browser Anda tanpa halaman login dan tanpa mengirim catatan keuangan ke server pihak ketiga. Seluruh nominal transaksi, hutang, dan laporan disimpan aman di <code>localStorage</code> perangkat Anda.
+        </p>
+      </article>
+
+      <!-- Data Management Card -->
+      <article class="ios-card">
+        <div class="ios-card-title" style="margin-bottom: 14px;">
+          <span>⚙️</span> Manajemen Data &amp; Cadangan
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label class="ios-form-label">Cadangkan Data (JSON)</label>
+            <button class="btn-ios btn-ios-secondary" style="width: 100%;" onclick="exportJSONBackup()">
+              <span>💾</span> Unduh Berkas Cadangan (.json)
+            </button>
+          </div>
+
+          <div>
+            <label class="ios-form-label">Pulihkan Data dari Berkas JSON</label>
+            <input type="file" id="importJsonInput" accept=".json" style="display: none;" onchange="importJSONBackup(event)" />
+            <button class="btn-ios btn-ios-secondary" style="width: 100%;" onclick="document.getElementById('importJsonInput').click()">
+              <span>📂</span> Pilih Berkas JSON untuk Dipulihkan
+            </button>
+          </div>
+
+          <div style="margin-top: 10px; padding-top: 14px; border-top: 1px solid var(--ios-separator);">
+            <label class="ios-form-label">Data Uji Coba</label>
+            <button class="btn-ios btn-ios-primary" style="width: 100%; margin-bottom: 10px;" onclick="loadSampleData()">
+              <span>✨</span> Muat Data Contoh Lengkap (November 2026)
+            </button>
+            <button class="btn-ios btn-ios-danger" style="width: 100%;" onclick="resetAllData()">
+              <span>🗑️</span> Reset Bersih Semua Data Transaksi
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Aturan Finansial 50/30/20 Mini-Guide -->
+      <article class="ios-card">
+        <div class="ios-card-title" style="margin-bottom: 10px;">
+          <span>📖</span> Panduan Singkat Aturan 50 / 30 / 20
+        </div>
+        <ul style="padding-left: 20px; font-size: 13px; color: var(--ios-label-secondary); line-height: 1.6;">
+          <li><strong>50% Kebutuhan Pokok:</strong> Pengeluaran esensial yang tidak bisa ditunda seperti kos/tempat tinggal, makanan sehat sehari-hari, bensin/transportasi wajib, dan tagihan listrik/air.</li>
+          <li><strong>30% Keinginan:</strong> Pengeluaran penunjang kenyamanan hidup seperti belanja hobi, nongkrong, langganan streaming, dan hiburan.</li>
+          <li><strong>20% Tabungan &amp; Darurat:</strong> Investasi masa depan, tabungan pensiun, dan pengisian dana darurat minimal setara 3 bulan biaya hidup.</li>
+        </ul>
+      </article>
+
+    </section>
+
+  </main>
+
+  <!-- ================= FLOATING BOTTOM TAB BAR (iOS Mobile Dock) ================= -->
+  <nav class="ios-bottom-bar" aria-label="Menu Utama">
+    <button class="tab-bar-item active" data-tab="beranda" onclick="switchTab('beranda')">
+      <span class="tab-bar-icon">🏠</span>
+      <span>Beranda</span>
+    </button>
+    <button class="tab-bar-item" data-tab="transaksi" onclick="switchTab('transaksi')">
+      <span class="tab-bar-icon">💳</span>
+      <span>Transaksi</span>
+    </button>
+
+    <!-- Center Glow Add Button -->
+    <button class="tab-bar-add-btn" onclick="openAddModal('out')" title="Catat Transaksi">
+      <span>+</span>
+    </button>
+
+    <button class="tab-bar-item" data-tab="tabungan" onclick="switchTab('tabungan')">
+      <span class="tab-bar-icon">🎯</span>
+      <span>Tabungan</span>
+    </button>
+    <button class="tab-bar-item" data-tab="laporan" onclick="switchTab('laporan')">
+      <span class="tab-bar-icon">📊</span>
+      <span>Laporan</span>
+    </button>
+  </nav>
+
+  <!-- ================= iOS ACTION SHEET: TAMBAH TRANSAKSI ================= -->
+  <div id="txModalOverlay" class="ios-modal-overlay" onclick="if(event.target === this) closeAddModal()">
+    <div class="ios-bottom-sheet">
+      <div class="sheet-handle"></div>
+      
+      <div class="sheet-header">
+        <h3 id="txModalTitle" class="sheet-title">Catat Transaksi</h3>
+        <button class="sheet-close-btn" onclick="closeAddModal()" aria-label="Tutup">✕</button>
+      </div>
+
+      <!-- Segmented Type Selector -->
+      <div class="segmented-control" style="margin-bottom: 18px;">
+        <button class="segment-btn modal-segment-btn active" data-type="out" onclick="setModalTxType('out')">Pengeluaran</button>
+        <button class="segment-btn modal-segment-btn" data-type="in" onclick="setModalTxType('in')">Pemasukan</button>
+        <button class="segment-btn modal-segment-btn" data-type="piutang" onclick="setModalTxType('piutang')">Piutang</button>
+        <button class="segment-btn modal-segment-btn" data-type="utang" onclick="setModalTxType('utang')">Utang</button>
+      </div>
+
+      <form id="txForm" onsubmit="handleSaveTransaction(event)">
+        <!-- Nominal Input -->
+        <div class="ios-form-group">
+          <label class="ios-form-label" for="txAmount">Nominal (Rp)</label>
+          <input type="text" id="txAmount" class="ios-input mono" placeholder="Contoh: 50000" inputmode="numeric" required autofocus />
+        </div>
+
+        <!-- Deskripsi Input -->
+        <div class="ios-form-group">
+          <label class="ios-form-label" for="txDesc">Keterangan / Deskripsi</label>
+          <input type="text" id="txDesc" class="ios-input" placeholder="Contoh: Makan siang, Gaji, Bensin..." />
+        </div>
+
+        <!-- Kategori Grid Selection -->
+        <div class="ios-form-group">
+          <label class="ios-form-label">Pilih Kategori</label>
+          <div id="catPickerGrid" class="cat-picker-grid"></div>
+        </div>
+
+        <!-- Tanggal -->
+        <div class="ios-form-group">
+          <label class="ios-form-label" for="txDate">Tanggal Transaksi</label>
+          <input type="date" id="txDate" class="ios-input" required />
+        </div>
+
+        <!-- Pihak & Tenggat (Opsional untuk Utang / Piutang) -->
+        <div id="partyGroup" class="ios-form-group" style="display: none;">
+          <label class="ios-form-label" for="txParty">Nama Pihak / Teman</label>
+          <input type="text" id="txParty" class="ios-input" placeholder="Contoh: Budi, Kantor, Bank..." />
+          <div style="margin-top: 10px;">
+            <label class="ios-form-label" for="txDue">Tenggat Waktu Pelunasan</label>
+            <input type="date" id="txDue" class="ios-input" />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="margin-top: 24px;">
+          <button type="submit" class="btn-ios btn-ios-primary" style="width: 100%; padding: 14px; font-size: 15px;">
+            Simpan Transaksi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= iOS DETAIL MODAL: INDIKATOR KESEHATAN ================= -->
+  <div id="healthModalOverlay" class="ios-modal-overlay" onclick="if(event.target === this) closeHealthModal()">
+    <div class="ios-bottom-sheet">
+      <div class="sheet-handle"></div>
+      
+      <div class="sheet-header">
+        <h3 id="healthModalTitle" class="sheet-title">Indikator Finansial</h3>
+        <button class="sheet-close-btn" onclick="closeHealthModal()" aria-label="Tutup">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13.5px; line-height: 1.55;">
+        <div style="background: var(--ios-card-subtle); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--ios-separator);">
+          <div style="font-weight: 700; color: var(--ios-blue); font-size: 11.5px; text-transform: uppercase; margin-bottom: 4px;">Rumus &amp; Perhitungan</div>
+          <div id="healthModalFormula" class="mono" style="font-size: 13px; font-weight: 600;"></div>
+        </div>
+
+        <div>
+          <div style="font-weight: 700; color: var(--ios-label); margin-bottom: 4px;">🎯 Tolok Ukur Sehat</div>
+          <p id="healthModalRule" style="color: var(--ios-label-secondary);"></p>
+        </div>
+
+        <div>
+          <div style="font-weight: 700; color: var(--ios-label); margin-bottom: 4px;">💡 Saran &amp; Langkah Konkret</div>
+          <p id="healthModalTips" style="color: var(--ios-label-secondary);"></p>
+        </div>
+
+        <button class="btn-ios btn-ios-primary" style="margin-top: 10px;" onclick="closeHealthModal()">
+          Saya Mengerti
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Controller -->
+  <script src="app.js"></script>
+</body>
+</html>
